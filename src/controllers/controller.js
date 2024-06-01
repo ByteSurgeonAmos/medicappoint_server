@@ -15,11 +15,11 @@ async function addEmailToUser(req, res) {
     if (emailExists) {
       return res.status(400).json({ message: "Email already exists." });
     }
+    await sendWaitingListEmail(email);
     const query =
       "INSERT INTO users(email, role, date_enrolled) VALUES($1, $2, CURRENT_DATE) RETURNING *;";
     const values = [email, role];
     await client.query(query, values);
-    await sendWaitingListEmail(email);
     return res.status(200).json({ message: "Joined successfully!" });
   } catch (err) {
     console.error("Error adding user to the database:", err);
